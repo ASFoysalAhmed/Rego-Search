@@ -1,0 +1,26 @@
+[Unit]
+Description=Carma Lookup API
+After=network.target
+
+[Service]
+Type=simple
+User=carma
+Group=carma
+WorkingDirectory=/opt/carma-lookup
+EnvironmentFile=-/etc/carma-lookup.env
+ExecStart=/opt/carma-lookup/deploy/ubuntu/start_carma_lookup.sh
+Restart=always
+RestartSec=5
+TimeoutStartSec=120
+TimeoutStopSec=30
+KillMode=process
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/opt/carma-lookup
+
+[Install]
+WantedBy=multi-user.target
