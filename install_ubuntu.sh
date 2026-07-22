@@ -15,6 +15,7 @@ export DEBIAN_FRONTEND=noninteractive
 apt-get update
 apt-get install -y \
   git \
+  gnupg \
   nginx \
   rsync \
   xvfb \
@@ -23,6 +24,16 @@ apt-get install -y \
   python3-pip \
   ca-certificates \
   curl
+
+install -d -m 0755 /etc/apt/keyrings
+curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /etc/apt/keyrings/google-chrome.gpg
+chmod 0644 /etc/apt/keyrings/google-chrome.gpg
+cat >/etc/apt/sources.list.d/google-chrome.list <<'EOF'
+deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome.gpg] https://dl.google.com/linux/chrome/deb/ stable main
+EOF
+
+apt-get update
+apt-get install -y google-chrome-stable
 
 if ! id -u "${APP_USER}" >/dev/null 2>&1; then
   useradd --system --create-home --shell /bin/bash "${APP_USER}"
@@ -35,10 +46,15 @@ chown -R "${APP_USER}:${APP_USER}" "${APP_DIR}"
 rsync -a --delete --exclude ".venv" --exclude "__pycache__" ./ "${APP_DIR}/"
 chown -R "${APP_USER}:${APP_USER}" "${APP_DIR}"
 
+# Windows-authored repos may carry CRLF line endings that break Linux shebang execution.
+sed -i 's/\r$//' "${APP_DIR}/deploy/ubuntu/start_carma_lookup.sh"
+sed -i 's/\r$//' "${APP_DIR}/deploy/ubuntu/install_ubuntu.sh"
+sed -i 's/\r$//' "${APP_DIR}/deploy/ubuntu/carma-lookup.service"
+sed -i 's/\r$//' "${APP_DIR}/deploy/ubuntu/nginx.carma-lookup.conf"
+
 sudo -u "${APP_USER}" bash -lc "cd '${APP_DIR}' && ${PYTHON_BIN} -m venv .venv"
 sudo -u "${APP_USER}" bash -lc "cd '${APP_DIR}' && .venv/bin/pip install --upgrade pip"
 sudo -u "${APP_USER}" bash -lc "cd '${APP_DIR}' && .venv/bin/pip install -r requirements.txt"
-sudo -u "${APP_USER}" bash -lc "cd '${APP_DIR}' && PLAYWRIGHT_BROWSERS_PATH='${APP_DIR}/.ms-playwright' .venv/bin/python -m playwright install --with-deps chromium"
 
 chmod +x "${APP_DIR}/deploy/ubuntu/start_carma_lookup.sh"
 
