@@ -9,6 +9,8 @@ Group=carma
 WorkingDirectory=/opt/carma-lookup
 EnvironmentFile=-/etc/carma-lookup.env
 Environment=TMPDIR=/var/tmp/carma-lookup
+Environment=TEMP=/var/tmp/carma-lookup
+Environment=TMP=/var/tmp/carma-lookup
 ExecStart=/opt/carma-lookup/deploy/ubuntu/start_carma_lookup.sh
 Restart=always
 RestartSec=5

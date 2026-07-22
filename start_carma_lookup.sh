@@ -17,6 +17,7 @@ if [[ -f /etc/carma-lookup.env ]]; then
 fi
 
 # Keep headed browser behavior while using a virtual display.
-exec /usr/bin/xvfb-run -a \
+exec env TMPDIR="${TMPDIR}" TEMP="${TEMP}" TMP="${TMP}" \
+  /usr/bin/xvfb-run -a \
   --server-args="-screen 0 1366x900x24" \
   "${APP_DIR}/.venv/bin/python" "${APP_DIR}/run_prod.py"
