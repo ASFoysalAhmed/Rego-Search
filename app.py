@@ -61,6 +61,8 @@ API_DEBUG = _env_bool("API_DEBUG", False)
 API_TOKEN = str(os.getenv("API_TOKEN", "")).strip()
 REQUIRE_API_TOKEN = _env_bool("REQUIRE_API_TOKEN", bool(API_TOKEN))
 TOKEN_AUTH_PROTECTED_PATHS = {"/lookup", "/browser-status"}
+PLAYWRIGHT_EXECUTABLE_PATH = str(os.getenv("PLAYWRIGHT_EXECUTABLE_PATH", "")).strip()
+PLAYWRIGHT_BROWSER_CHANNEL = str(os.getenv("PLAYWRIGHT_BROWSER_CHANNEL", "")).strip()
 
 
 def _extract_request_token() -> str:
@@ -275,7 +277,18 @@ class _BrowserWorker(threading.Thread):
 
         for launch_headless in launch_attempts:
             try:
-                self.browser = playwright.chromium.launch(headless=launch_headless)
+                launch_kwargs: dict[str, Any] = {"headless": launch_headless}
+                launch_kwargs["args"] = [
+                    "--no-sandbox",
+                    "--disable-setuid-sandbox",
+                    "--disable-dev-shm-usage",
+                    "--disable-gpu",
+                ]
+                if PLAYWRIGHT_EXECUTABLE_PATH:
+                    launch_kwargs["executable_path"] = PLAYWRIGHT_EXECUTABLE_PATH
+                elif PLAYWRIGHT_BROWSER_CHANNEL:
+                    launch_kwargs["channel"] = PLAYWRIGHT_BROWSER_CHANNEL
+                self.browser = playwright.chromium.launch(**launch_kwargs)
                 self.launched_headless = launch_headless
                 return launch_headless
             except Exception as exc:  # pragma: no cover - environment dependent
