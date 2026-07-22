@@ -63,6 +63,16 @@ REQUIRE_API_TOKEN = _env_bool("REQUIRE_API_TOKEN", bool(API_TOKEN))
 TOKEN_AUTH_PROTECTED_PATHS = {"/lookup", "/browser-status"}
 PLAYWRIGHT_EXECUTABLE_PATH = str(os.getenv("PLAYWRIGHT_EXECUTABLE_PATH", "")).strip()
 PLAYWRIGHT_BROWSER_CHANNEL = str(os.getenv("PLAYWRIGHT_BROWSER_CHANNEL", "")).strip()
+PLAYWRIGHT_TEMP_DIR = str(os.getenv("PLAYWRIGHT_TEMP_DIR", "/var/tmp/carma-lookup")).strip()
+
+if PLAYWRIGHT_TEMP_DIR:
+    try:
+        os.makedirs(PLAYWRIGHT_TEMP_DIR, exist_ok=True)
+    except Exception:
+        pass
+    os.environ["TMPDIR"] = PLAYWRIGHT_TEMP_DIR
+    os.environ["TEMP"] = PLAYWRIGHT_TEMP_DIR
+    os.environ["TMP"] = PLAYWRIGHT_TEMP_DIR
 
 
 def _extract_request_token() -> str:
