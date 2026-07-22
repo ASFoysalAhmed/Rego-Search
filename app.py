@@ -294,6 +294,12 @@ class _BrowserWorker(threading.Thread):
                     "--disable-dev-shm-usage",
                     "--disable-gpu",
                 ]
+                launch_kwargs["env"] = {
+                    **os.environ,
+                    "TMPDIR": PLAYWRIGHT_TEMP_DIR,
+                    "TEMP": PLAYWRIGHT_TEMP_DIR,
+                    "TMP": PLAYWRIGHT_TEMP_DIR,
+                }
                 if PLAYWRIGHT_EXECUTABLE_PATH:
                     launch_kwargs["executable_path"] = PLAYWRIGHT_EXECUTABLE_PATH
                 elif PLAYWRIGHT_BROWSER_CHANNEL:
