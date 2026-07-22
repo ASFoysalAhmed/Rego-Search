@@ -2,6 +2,9 @@
 set -euo pipefail
 
 APP_DIR="/opt/carma-lookup"
+export TMPDIR="/var/tmp/carma-lookup"
+
+mkdir -p "${TMPDIR}"
 
 cd "${APP_DIR}"
 
