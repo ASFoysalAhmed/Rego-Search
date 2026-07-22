@@ -1,0 +1,59 @@
+{
+  "info": {
+    "name": "Carma Lookup API",
+    "description": "Postman collection for local Flask Carma lookup service.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/health",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "health"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Lookup Vehicle",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"rego\": \"YQO87S\",\n  \"state\": \"ACT\",\n  \"recaptcha_token\": \"PASTE_FRESH_TOKEN_HERE\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/lookup",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "lookup"
+          ]
+        },
+        "description": "Requires a fresh recaptcha token from Carma browser context."
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:5000"
+    }
+  ]
+}
